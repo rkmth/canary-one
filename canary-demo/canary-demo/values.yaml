@@ -13,6 +13,7 @@ service:
 ingress:
   enabled: true
   host: "canary-demo.local"
+  canaryWeight: 20
 
 canary:
   enabled: true
