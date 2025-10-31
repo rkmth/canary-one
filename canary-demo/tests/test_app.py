@@ -20,8 +20,8 @@ class TestCanaryApp(unittest.TestCase):
         # Directly hit the canary service port to assert the canary content
         response = requests.get(self.canary_url)
         self.assertEqual(response.status_code, 200)
-        self.assertIn("Hello from version v2", response.text)
-        self.assertIn("background-color: green", response.text)
+        self.assertIn("Hello from version v3", response.text)
+        self.assertIn("background-color: yellow", response.text)
 
     def test_metrics(self):
         # Check metrics on the stable instance
