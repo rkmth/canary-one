@@ -1,42 +1,14 @@
 # Deployment Information
-# $ kubectl get pods -n canary-demo
-# NAME                                                     READY   STATUS    RESTARTS   AGE
-# alertmanager-prometheus-kube-prometheus-alertmanager-0   2/2     Running   0          33m
-# canary-demo-689b48b875-284zw                             1/1     Running   0          29m
-# canary-demo-689b48b875-8rqlh                             1/1     Running   0          29m
-# canary-demo-689b48b875-h26hg                             1/1     Running   0          29m
-# canary-demo-canary-75744dfddf-2drw8                      1/1     Running   0          29m
-# prometheus-grafana-6c969b7798-rqbll                      3/3     Running   0          33m
-# prometheus-kube-prometheus-operator-7f8946dc7b-zsh7n     1/1     Running   0          33m
-# prometheus-kube-state-metrics-7c5fb9d798-ff9r2           1/1     Running   0          33m
-# prometheus-prometheus-kube-prometheus-prometheus-0       2/2     Running   0          33m
-# prometheus-prometheus-node-exporter-lj4t2                1/1     Running   0          33m
 pods_status:
   main_pods_running: 3
   canary_pods_running: 1
 
 # Service Information
-# $ kubectl get pods -n canary-demo
-# NAME                                                     READY   STATUS    RESTARTS   AGE
-# alertmanager-prometheus-kube-prometheus-alertmanager-0   2/2     Running   0          39m
-# canary-demo-689b48b875-284zw                             1/1     Running   0          35m
-# canary-demo-689b48b875-8rqlh                             1/1     Running   0          35m
-# canary-demo-689b48b875-h26hg                             1/1     Running   0          35m
-# canary-demo-canary-75744dfddf-2drw8                      1/1     Running   0          35m
-# prometheus-grafana-6c969b7798-rqbll                      3/3     Running   0          39m
-# prometheus-kube-prometheus-operator-7f8946dc7b-zsh7n     1/1     Running   0          39m
-# prometheus-kube-state-metrics-7c5fb9d798-ff9r2           1/1     Running   0          39m
-# prometheus-prometheus-kube-prometheus-prometheus-0       2/2     Running   0          39m
-# prometheus-prometheus-node-exporter-lj4t2                1/1     Running   0          39m
 service_endpoints:
   main_service_cluster_ip: 10.96.120.151
   canary_service_cluster_ip: 10.100.200.238
 
 # Ingress Information
-# $ kubectl get ingress -n canary-demo
-# NAME                       CLASS   HOSTS               ADDRESS        PORTS   AGE
-# canary-demo-ingress        nginx   canary-demo.local   192.168.49.2   80      36m
-# canary-demo-main-ingress   nginx   canary-demo.local   192.168.49.2   80      36m
 ingress_details:
   address: 192.168.49.2
   host: canary-demo.local
