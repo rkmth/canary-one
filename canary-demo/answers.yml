@@ -1,53 +1,82 @@
 # Deployment Information
+# $ kubectl get pods -n canary-demo
+# NAME                                                     READY   STATUS    RESTARTS   AGE
+# alertmanager-prometheus-kube-prometheus-alertmanager-0   2/2     Running   0          33m
+# canary-demo-689b48b875-284zw                             1/1     Running   0          29m
+# canary-demo-689b48b875-8rqlh                             1/1     Running   0          29m
+# canary-demo-689b48b875-h26hg                             1/1     Running   0          29m
+# canary-demo-canary-75744dfddf-2drw8                      1/1     Running   0          29m
+# prometheus-grafana-6c969b7798-rqbll                      3/3     Running   0          33m
+# prometheus-kube-prometheus-operator-7f8946dc7b-zsh7n     1/1     Running   0          33m
+# prometheus-kube-state-metrics-7c5fb9d798-ff9r2           1/1     Running   0          33m
+# prometheus-prometheus-kube-prometheus-prometheus-0       2/2     Running   0          33m
+# prometheus-prometheus-node-exporter-lj4t2                1/1     Running   0          33m
 pods_status:
-  main_pods_running: #TODO: Enter number of main pods running
-  canary_pods_running: #TODO: Enter number of canary pods running
+  main_pods_running: 3
+  canary_pods_running: 1
 
 # Service Information
+# $ kubectl get pods -n canary-demo
+# NAME                                                     READY   STATUS    RESTARTS   AGE
+# alertmanager-prometheus-kube-prometheus-alertmanager-0   2/2     Running   0          39m
+# canary-demo-689b48b875-284zw                             1/1     Running   0          35m
+# canary-demo-689b48b875-8rqlh                             1/1     Running   0          35m
+# canary-demo-689b48b875-h26hg                             1/1     Running   0          35m
+# canary-demo-canary-75744dfddf-2drw8                      1/1     Running   0          35m
+# prometheus-grafana-6c969b7798-rqbll                      3/3     Running   0          39m
+# prometheus-kube-prometheus-operator-7f8946dc7b-zsh7n     1/1     Running   0          39m
+# prometheus-kube-state-metrics-7c5fb9d798-ff9r2           1/1     Running   0          39m
+# prometheus-prometheus-kube-prometheus-prometheus-0       2/2     Running   0          39m
+# prometheus-prometheus-node-exporter-lj4t2                1/1     Running   0          39m
 service_endpoints:
-  main_service_cluster_ip: #TODO: Enter the ClusterIP of main service
-  canary_service_cluster_ip: #TODO: Enter the ClusterIP of canary service
+  main_service_cluster_ip: 10.96.120.151
+  canary_service_cluster_ip: 10.100.200.238
 
 # Ingress Information
+# $ kubectl get ingress -n canary-demo
+# NAME                       CLASS   HOSTS               ADDRESS        PORTS   AGE
+# canary-demo-ingress        nginx   canary-demo.local   192.168.49.2   80      36m
+# canary-demo-main-ingress   nginx   canary-demo.local   192.168.49.2   80      36m
 ingress_details:
-  address: #TODO: Enter the Ingress controller IP address
-  host: #TODO: Enter the configured host (should be canary-demo.local)
+  address: 192.168.49.2
+  host: canary-demo.local
 
 # Metrics
 main_deployment_metrics:
-  http_requests_total: #TODO: Enter the value from main deployment's /metrics endpoint
-  process_cpu_seconds_total: #TODO: Enter the CPU seconds from main deployment
-  process_resident_memory_bytes: #TODO: Enter the memory usage from main deployment
+  http_requests_total: 455.0
+  process_cpu_seconds_total: 1.4100000000000001
+  process_resident_memory_bytes: 3.2346112e+07
 
 canary_deployment_metrics:
-  http_requests_total: #TODO: Enter the value from canary deployment's /metrics endpoint
-  process_cpu_seconds_total: #TODO: Enter the CPU seconds from canary deployment
-  process_resident_memory_bytes: #TODO: Enter the memory usage from canary deployment
+  http_requests_total: 89.0 # NOTE: This value is less than 20% of the total requests because of a bug in a deployment with respect to canaryWeight in ingress. Fixing this helped route 20% of traffic to canary.
+  process_cpu_seconds_total: 0.95
+  process_resident_memory_bytes: 3.2489472e+07
 
 # Traffic Distribution Test
 traffic_test_results:
-  total_requests_sent: #TODO: Enter how many test requests you sent (should be 20)
-  main_responses_received: #TODO: Enter how many responses were from main deployment
-  canary_responses_received: #TODO: Enter how many responses were from canary deployment
-  actual_canary_percentage: #TODO: Calculate the actual percentage of canary traffic
+  total_requests_sent: 20
+  main_responses_received: 15
+  canary_responses_received: 5
+  actual_canary_percentage: 25%
+# The results vary from 15-17 responses from main and 3-5 from canary (actual_canary_percentage = 15-25%). As per the deployment config, actual_canary_percentage should 20%
 
 # Prometheus Queries
 prometheus_metrics:
-  main_request_rate: #TODO: Enter the result of rate(http_requests_total{version="v1"}[5m])
-  canary_request_rate: #TODO: Enter the result of rate(http_requests_total{version="v2"}[5m])
+  main_request_rate: 0.05555555555555555
+  canary_request_rate: 0.018518518518518517
 
 # Rollback Test
 rollback_test:
-  previous_revision: #TODO: Enter the revision number before rollback
-  rollback_command_used: #TODO: Enter the helm rollback command you used
-  time_to_rollback_seconds: #TODO: Enter how long the rollback took to complete
+  previous_revision: 3
+  rollback_command_used: helm rollback canary-demo 2 -n canary-demo
+  time_to_rollback_seconds: < 1s # felt almost instantaneous as I ran the `for i in {1..20}; do curl -H "Host: canary-demo.local" localhost:8082; done` command and I could see yellow in responses
 
 # Error Budget Calculation (based on 99.9% SLO)
 error_budget:
-  monthly_error_budget_seconds: #TODO: Calculate and enter the monthly error budget in seconds
-  remaining_error_budget_percentage: #TODO: Enter current remaining error budget percentage
+  monthly_error_budget_seconds: 2592.00
+  remaining_error_budget_percentage: 100.00
 
 # Additional Observations
 observations:
-  unexpected_behaviors: #TODO: List any unexpected behaviors you observed
-  suggested_improvements: #TODO: List any improvements you would suggest
+  unexpected_behaviors: "During traffic distribution test, the canary deployment received slightly varying traffic than expected (25% instead of 20%). This could be due to the ingress controller's load balancing algorithm."
+  suggested_improvements: "Simulate errors (0.1% of the time) in app.py caused no visible errors during testing. Consider increasing error rate for better testing."
