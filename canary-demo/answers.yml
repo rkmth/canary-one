@@ -41,7 +41,7 @@ prometheus_metrics:
 rollback_test:
   previous_revision: 3
   rollback_command_used: helm rollback canary-demo 2 -n canary-demo
-  time_to_rollback_seconds: < 1s # felt almost instantaneous as I ran the `for i in {1..20}; do curl -H "Host: canary-demo.local" localhost:8082; done` command and I could see yellow in responses
+  time_to_rollback_seconds: < 1s # felt almost instantaneous as I ran the `for i in {1..20}; do curl -H "Host: canary-demo.local" localhost:8082; done` command and I could see colour change from yellow to green in responses
 
 # Error Budget Calculation (based on 99.9% SLO)
 error_budget:
